@@ -3,9 +3,9 @@ import json, sys
 sys.path.insert(0, '.')
 from prosody_rules import syllabify, assign_weights
 
-with open('PATH_TO_YOUR_CORPUS.txt', encoding='utf-8') as f:
+path = sys.argv[1] if len(sys.argv) > 1 else 'corpus.json'
+with open(path, encoding='utf-8') as f:
     data = json.load(f)
-    print(data[:5])
 
 total = 0
 exact_match = 0
