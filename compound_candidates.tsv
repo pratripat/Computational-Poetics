@@ -1,0 +1,106 @@
+word	parts	type	status	impact	gold_weights	whole_weights	split_weights	notes
+कंथातर	कंथा + तर	dict+dict	PENDING	NEUTRAL	[2, 2, 1, 1]	[2, 2, 1, 1]	[2, 2, 1, 1]	Candidate compound split; scansion unaffected
+कतरब्योंत	कतर + ब्योंत	dict+dict	APPROVED	FIXES	[1, 1, 1, 2, 1]	[1, 1, 2, 2, 1]	[1, 1, 1, 2, 1]	Compound word: कतर + ब्योंत (part कतर in extra_lexicon)
+कथानक	कथा + नक	dict+dict	PENDING	NEUTRAL	[1, 2, 1, 1]	[1, 2, 1, 1]	[1, 2, 1, 1]	Candidate compound split; scansion unaffected
+कद्दूकश	कद्दू + कश	dict+dict	PENDING	NEUTRAL	[2, 2, 1, 1]	[2, 2, 1, 1]	[2, 2, 1, 1]	Candidate compound split; scansion unaffected
+कनरस	कन + रस	dict+dict	PENDING	NEUTRAL	[1, 1, 1, 1]	[1, 1, 1, 1]	[1, 1, 1, 1]	Candidate compound split; scansion unaffected
+कनस्तर	कन + स्तर	dict+dict	REJECTED	BREAKS	[1, 2, 1, 1]	[1, 2, 1, 1]	[1, 1, 1, 1]	Tin canister (loanword/monomorphemic); not a compound of कन+स्तर
+कबाड़खाना	कबाड़ + खाना	dict+dict	PENDING	NEUTRAL	[1, 2, 1, 2, 2]	[1, 2, 1, 2, 2]	[1, 2, 1, 2, 2]	Candidate compound split; scansion unaffected
+कमबख्त	कम + बख्त	dict+dict	PENDING	NEUTRAL	[1, 1, 2, 1]	[1, 1, 2, 1]	[1, 1, 2, 1]	Candidate compound split; scansion unaffected
+करकराहट	करकरा + हट	dict+dict	PENDING	NEUTRAL	[1, 1, 1, 2, 1, 1]	[1, 1, 1, 2, 1, 1]	[1, 1, 1, 2, 1, 1]	Candidate compound split; scansion unaffected
+करतब	कर + तब	dict+dict	PENDING	NEUTRAL	[1, 1, 1, 1]	[1, 1, 1, 1]	[1, 1, 1, 1]	Candidate compound split; scansion unaffected
+करतार	कर + तार	dict+dict	PENDING	NEUTRAL	[1, 1, 2, 1]	[1, 1, 2, 1]	[1, 1, 2, 1]	Candidate compound split; scansion unaffected
+करधनी	कर + धनी	dict+dict	PENDING	NEUTRAL	[1, 1, 1, 2]	[1, 1, 1, 2]	[1, 1, 1, 2]	Candidate compound split; scansion unaffected
+करमकल्ला	करम + कल्ला	dict+dict	PENDING	NEUTRAL	[1, 1, 1, 2, 2]	[1, 1, 1, 2, 2]	[1, 1, 1, 2, 2]	Candidate compound split; scansion unaffected
+करवट	कर + वट	dict+dict	PENDING	NEUTRAL	[1, 1, 1, 1]	[1, 1, 1, 1]	[1, 1, 1, 1]	Candidate compound split; scansion unaffected
+कलपना	कल + पना	dict+dict	PENDING	NEUTRAL	[1, 1, 1, 2]	[1, 1, 1, 2]	[1, 1, 1, 2]	Candidate compound split; scansion unaffected
+कलवार	कल + वार	dict+dict	PENDING	NEUTRAL	[1, 1, 2, 1]	[1, 1, 2, 1]	[1, 1, 2, 1]	Candidate compound split; scansion unaffected
+कलाकंद	कला + कंद	dict+dict	PENDING	NEUTRAL	[1, 2, 2, 1]	[1, 2, 2, 1]	[1, 2, 2, 1]	Candidate compound split; scansion unaffected
+कल्पतरु	कल्प + तरु	dict+dict	PENDING	NEUTRAL	[2, 1, 1, 1]	[2, 1, 1, 1]	[2, 1, 1, 1]	Candidate compound split; scansion unaffected
+कल्पलता	कल्प + लता	dict+dict	PENDING	NEUTRAL	[2, 1, 1, 2]	[2, 1, 1, 2]	[2, 1, 1, 2]	Candidate compound split; scansion unaffected
+कल्पवृक्ष	कल्प + वृक्ष	dict+dict	PENDING	NEUTRAL	[2, 1, 2, 1]	[2, 1, 2, 1]	[2, 1, 2, 1]	Candidate compound split; scansion unaffected
+कसमसाना	कस + मसाना	dict+dict	PENDING	NEUTRAL	[1, 1, 1, 2, 2]	[1, 1, 1, 2, 2]	[1, 1, 1, 2, 2]	Candidate compound split; scansion unaffected
+कसरत	कस + रत	dict+dict	PENDING	NEUTRAL	[1, 1, 1, 1]	[1, 1, 1, 1]	[1, 1, 1, 1]	Candidate compound split; scansion unaffected
+कागजात	काग + जात	dict+dict	PENDING	NEUTRAL	[2, 1, 2, 1]	[2, 1, 2, 1]	[2, 1, 2, 1]	Candidate compound split; scansion unaffected
+कामचलाऊ	काम + चलाऊ	dict+dict	PENDING	NEUTRAL	[2, 1, 1, 2, 2]	[2, 1, 1, 2, 2]	[2, 1, 1, 2, 2]	Candidate compound split; scansion unaffected
+कामचोर	काम + चोर	dict+dict	PENDING	NEUTRAL	[2, 1, 2, 1]	[2, 1, 2, 1]	[2, 1, 2, 1]	Candidate compound split; scansion unaffected
+कामदानी	काम + दानी	dict+dict	PENDING	NEUTRAL	[2, 1, 2, 2]	[2, 1, 2, 2]	[2, 1, 2, 2]	Candidate compound split; scansion unaffected
+कामधाम	काम + धाम	dict+dict	PENDING	NEUTRAL	[2, 1, 2, 1]	[2, 1, 2, 1]	[2, 1, 2, 1]	Candidate compound split; scansion unaffected
+कारखाना	कार + खाना	dict+dict	PENDING	NEUTRAL	[2, 1, 2, 2]	[2, 1, 2, 2]	[2, 1, 2, 2]	Candidate compound split; scansion unaffected
+कारतूस	कार + तूस	dict+dict	PENDING	NEUTRAL	[2, 1, 2, 1]	[2, 1, 2, 1]	[2, 1, 2, 1]	Candidate compound split; scansion unaffected
+कारबार	कार + बार	dict+dict	PENDING	NEUTRAL	[2, 1, 2, 1]	[2, 1, 2, 1]	[2, 1, 2, 1]	Candidate compound split; scansion unaffected
+कारसाज़	कार + साज़	dict+dict	PENDING	NEUTRAL	[2, 1, 2, 1]	[2, 1, 2, 1]	[2, 1, 2, 1]	Candidate compound split; scansion unaffected
+कारावास	कारा + वास	dict+dict	PENDING	NEUTRAL	[2, 2, 2, 1]	[2, 2, 2, 1]	[2, 2, 2, 1]	Candidate compound split; scansion unaffected
+कार्यकर्त्ता	कार्य + कर्त्ता	dict+dict	PENDING	NEUTRAL	[2, 1, 2, 2]	[2, 1, 2, 2]	[2, 1, 2, 2]	Candidate compound split; scansion unaffected
+कार्यकुशल	कार्य + कुशल	dict+dict	PENDING	NEUTRAL	[2, 1, 1, 1, 1]	[2, 1, 1, 1, 1]	[2, 1, 1, 1, 1]	Candidate compound split; scansion unaffected
+कार्यक्रम	कार्य + क्रम	dict+dict	APPROVED	FIXES	[2, 1, 1, 1]	[2, 2, 1, 1]	[2, 1, 1, 1]	Compound word: conjunct क्र does not bump preceding syllable across boundary
+कार्यक्षम	कार्य + क्षम	dict+dict	APPROVED	FIXES	[2, 1, 1, 1]	[2, 2, 1, 1]	[2, 1, 1, 1]	Compound word: conjunct क्ष does not bump preceding syllable across boundary (part क्षम in extra_lexicon)
+कार्यप्रणाली	कार्य + प्रणाली	dict+dict	APPROVED	FIXES	[2, 1, 1, 2, 2]	[2, 2, 1, 2, 2]	[2, 1, 1, 2, 2]	Compound word: conjunct प्र does not bump preceding syllable across boundary
+कार्यभंग	कार्य + भंग	dict+dict	PENDING	NEUTRAL	[2, 1, 2, 1]	[2, 1, 2, 1]	[2, 1, 2, 1]	Candidate compound split; scansion unaffected
+कार्यवाहक	कार्य + वाहक	dict+dict	PENDING	NEUTRAL	[2, 1, 2, 1, 1]	[2, 1, 2, 1, 1]	[2, 1, 2, 1, 1]	Candidate compound split; scansion unaffected
+कार्यवाही	कार्य + वाही	dict+dict	PENDING	NEUTRAL	[2, 1, 2, 2]	[2, 1, 2, 2]	[2, 1, 2, 2]	Candidate compound split; scansion unaffected
+कार्यवृत्त	कार्य + वृत्त	dict+dict	PENDING	NEUTRAL	[2, 1, 2, 1]	[2, 1, 2, 1]	[2, 1, 2, 1]	Candidate compound split; scansion unaffected
+कार्यसाधक	कार्य + साधक	dict+dict	PENDING	NEUTRAL	[2, 1, 2, 1, 1]	[2, 1, 2, 1, 1]	[2, 1, 2, 1, 1]	Candidate compound split; scansion unaffected
+कार्यसूची	कार्य + सूची	dict+dict	PENDING	NEUTRAL	[2, 1, 2, 2]	[2, 1, 2, 2]	[2, 1, 2, 2]	Candidate compound split; scansion unaffected
+कालकोठरी	काल + कोठरी	dict+dict	PENDING	NEUTRAL	[2, 1, 2, 1, 2]	[2, 1, 2, 1, 2]	[2, 1, 2, 1, 2]	Candidate compound split; scansion unaffected
+कालक्रम	काल + क्रम	dict+dict	APPROVED	FIXES	[2, 1, 1, 1]	[2, 2, 1, 1]	[2, 1, 1, 1]	Compound word: conjunct क्र does not bump preceding syllable across boundary
+कालचक्र	काल + चक्र	dict+dict	PENDING	NEUTRAL	[2, 1, 2, 1]	[2, 1, 2, 1]	[2, 1, 2, 1]	Candidate compound split; scansion unaffected
+कालजयी	काल + जयी	dict+dict	PENDING	NEUTRAL	[2, 1, 1, 2]	[2, 1, 1, 2]	[2, 1, 1, 2]	Candidate compound split; scansion unaffected
+कालत्रय	काल + त्रय	dict+dict	APPROVED	FIXES	[2, 1, 1, 1]	[2, 2, 1, 1]	[2, 1, 1, 1]	Compound word: conjunct त्र does not bump preceding syllable across boundary
+कालदोष	काल + दोष	dict+dict	PENDING	NEUTRAL	[2, 1, 2, 1]	[2, 1, 2, 1]	[2, 1, 2, 1]	Candidate compound split; scansion unaffected
+कालधर्म	काल + धर्म	dict+dict	PENDING	NEUTRAL	[2, 1, 2, 1]	[2, 1, 2, 1]	[2, 1, 2, 1]	Candidate compound split; scansion unaffected
+कालानुक्रमण	कालानुक्रम + ण	dict+dict	APPROVED	FIXES	[2, 2, 1, 1, 1, 1]	[2, 2, 2, 1, 1, 1]	[2, 2, 1, 1, 1, 1]	Compound base + inflection
+किरकिराहट	किरकिरा + हट	dict+dict	PENDING	NEUTRAL	[1, 1, 1, 2, 1, 1]	[1, 1, 1, 2, 1, 1]	[1, 1, 1, 2, 1, 1]	Candidate compound split; scansion unaffected
+कुकर्म	कु + कर्म	prefix+dict	PENDING	NEUTRAL	[1, 2, 1]	[1, 2, 1]	[1, 2, 1]	Candidate compound split; scansion unaffected
+कुकृत्य	कु + कृत्य	prefix+dict	PENDING	NEUTRAL	[1, 2, 1]	[1, 2, 1]	[1, 2, 1]	Candidate compound split; scansion unaffected
+कुख्यात	कु + ख्यात	prefix+dict	APPROVED	FIXES	[1, 2, 1]	[2, 2, 1]	[1, 2, 1]	Prefix कु + root ख्यात: conjunct ख्य does not bump कु across boundary
+कुचक्र	कु + चक्र	prefix+dict	PENDING	NEUTRAL	[1, 2, 1]	[1, 2, 1]	[1, 2, 1]	Candidate compound split; scansion unaffected
+कुचलना	कु + चलना	prefix+dict	PENDING	NEUTRAL	[1, 1, 1, 2]	[1, 1, 1, 2]	[1, 1, 1, 2]	Candidate compound split; scansion unaffected
+कुचाल	कु + चाल	prefix+dict	PENDING	NEUTRAL	[1, 2, 1]	[1, 2, 1]	[1, 2, 1]	Candidate compound split; scansion unaffected
+कुचेष्टा	कु + चेष्टा	prefix+dict	PENDING	NEUTRAL	[1, 2, 2]	[1, 2, 2]	[1, 2, 2]	Candidate compound split; scansion unaffected
+कुजाति	कु + जाति	prefix+dict	PENDING	NEUTRAL	[1, 2, 1]	[1, 2, 1]	[1, 2, 1]	Candidate compound split; scansion unaffected
+कुटाई	कु + टाई	prefix+dict	PENDING	NEUTRAL	[1, 2, 2]	[1, 2, 2]	[1, 2, 2]	Candidate compound split; scansion unaffected
+कुटेव	कु + टेव	prefix+dict	PENDING	NEUTRAL	[1, 2, 1]	[1, 2, 1]	[1, 2, 1]	Candidate compound split; scansion unaffected
+कुठाँव	कु + ठाँव	prefix+dict	PENDING	NEUTRAL	[1, 2, 1]	[1, 2, 1]	[1, 2, 1]	Candidate compound split; scansion unaffected
+कुठौर	कु + ठौर	prefix+dict	PENDING	NEUTRAL	[1, 2, 1]	[1, 2, 1]	[1, 2, 1]	Candidate compound split; scansion unaffected
+कुढंग	कु + ढंग	prefix+dict	PENDING	NEUTRAL	[1, 2, 1]	[1, 2, 1]	[1, 2, 1]	Candidate compound split; scansion unaffected
+कुतरना	कु + तरना	prefix+dict	PENDING	NEUTRAL	[1, 1, 1, 2]	[1, 1, 1, 2]	[1, 1, 1, 2]	Candidate compound split; scansion unaffected
+कुतर्क	कु + तर्क	prefix+dict	PENDING	NEUTRAL	[1, 2, 1]	[1, 2, 1]	[1, 2, 1]	Candidate compound split; scansion unaffected
+कुदान	कु + दान	prefix+dict	PENDING	NEUTRAL	[1, 2, 1]	[1, 2, 1]	[1, 2, 1]	Candidate compound split; scansion unaffected
+कुदाल	कु + दाल	prefix+dict	PENDING	NEUTRAL	[1, 2, 1]	[1, 2, 1]	[1, 2, 1]	Candidate compound split; scansion unaffected
+कुनैन	कु + नैन	prefix+dict	PENDING	NEUTRAL	[1, 2, 1]	[1, 2, 1]	[1, 2, 1]	Candidate compound split; scansion unaffected
+कुपंथ	कु + पंथ	prefix+dict	PENDING	NEUTRAL	[1, 2, 1]	[1, 2, 1]	[1, 2, 1]	Candidate compound split; scansion unaffected
+कुपथ	कु + पथ	prefix+dict	PENDING	NEUTRAL	[1, 1, 1]	[1, 1, 1]	[1, 1, 1]	Candidate compound split; scansion unaffected
+कुपात्र	कु + पात्र	prefix+dict	PENDING	NEUTRAL	[1, 2, 1]	[1, 2, 1]	[1, 2, 1]	Candidate compound split; scansion unaffected
+कुप्रबन्ध	कु + प्रबन्ध	prefix+dict	APPROVED	FIXES	[1, 1, 2, 1]	[2, 1, 2, 1]	[1, 1, 2, 1]	Prefix कु + root प्रबन्ध: conjunct प्र does not bump कु (part प्रबन्ध in extra_lexicon)
+कुप्रशासन	कु + प्रशासन	prefix+dict	APPROVED	FIXES	[1, 1, 2, 1, 1]	[2, 1, 2, 1, 1]	[1, 1, 2, 1, 1]	Prefix कु + root प्रशासन: conjunct प्र does not bump कु (part प्रशासन in extra_lexicon)
+कुबुद्धि	कु + बुद्धि	prefix+dict	PENDING	NEUTRAL	[1, 2, 1]	[1, 2, 1]	[1, 2, 1]	Candidate compound split; scansion unaffected
+कुबोल	कु + बोल	prefix+dict	PENDING	NEUTRAL	[1, 2, 1]	[1, 2, 1]	[1, 2, 1]	Candidate compound split; scansion unaffected
+कुबड़ा	कु + बड़ा	prefix+dict	PENDING	NEUTRAL	[1, 1, 2]	[1, 1, 2]	[1, 1, 2]	Candidate compound split; scansion unaffected
+कुमति	कु + मति	prefix+dict	PENDING	NEUTRAL	[1, 1, 1]	[1, 1, 1]	[1, 1, 1]	Candidate compound split; scansion unaffected
+कुमार	कु + मार	prefix+dict	PENDING	NEUTRAL	[1, 2, 1]	[1, 2, 1]	[1, 2, 1]	Candidate compound split; scansion unaffected
+कुरचना	कु + रचना	prefix+dict	PENDING	NEUTRAL	[1, 1, 1, 2]	[1, 1, 1, 2]	[1, 1, 1, 2]	Candidate compound split; scansion unaffected
+कुरीति	कु + रीति	prefix+dict	PENDING	NEUTRAL	[1, 2, 1]	[1, 2, 1]	[1, 2, 1]	Candidate compound split; scansion unaffected
+कुरूप	कु + रूप	prefix+dict	PENDING	NEUTRAL	[1, 2, 1]	[1, 2, 1]	[1, 2, 1]	Candidate compound split; scansion unaffected
+कुलबुलाना	कुल + बुलाना	dict+dict	PENDING	NEUTRAL	[1, 1, 1, 2, 2]	[1, 1, 1, 2, 2]	[1, 1, 1, 2, 2]	Candidate compound split; scansion unaffected
+कुलीन	कु + लीन	prefix+dict	PENDING	NEUTRAL	[1, 2, 1]	[1, 2, 1]	[1, 2, 1]	Candidate compound split; scansion unaffected
+कुवचन	कु + वचन	prefix+dict	PENDING	NEUTRAL	[1, 1, 1, 1]	[1, 1, 1, 1]	[1, 1, 1, 1]	Candidate compound split; scansion unaffected
+कुवासना	कु + वासना	prefix+dict	PENDING	NEUTRAL	[1, 2, 1, 2]	[1, 2, 1, 2]	[1, 2, 1, 2]	Candidate compound split; scansion unaffected
+कुविचार	कु + विचार	prefix+dict	PENDING	NEUTRAL	[1, 1, 2, 1]	[1, 1, 2, 1]	[1, 1, 2, 1]	Candidate compound split; scansion unaffected
+कुव्यवहार	कु + व्यवहार	prefix+dict	REJECTED	BREAKS	[2, 1, 1, 2, 1]	[2, 1, 1, 2, 1]	[1, 1, 1, 2, 1]	Sir's file scans कु as heavy [2], bumping across boundary; excluded to match Sir's annotation
+कुशलता	कुश + लता	dict+dict	PENDING	NEUTRAL	[1, 1, 1, 2]	[1, 1, 1, 2]	[1, 1, 1, 2]	Candidate compound split; scansion unaffected
+कुशासन	कु + शासन	prefix+dict	PENDING	NEUTRAL	[1, 2, 1, 1]	[1, 2, 1, 1]	[1, 2, 1, 1]	Candidate compound split; scansion unaffected
+कुसंग	कु + संग	prefix+dict	PENDING	NEUTRAL	[1, 2, 1]	[1, 2, 1]	[1, 2, 1]	Candidate compound split; scansion unaffected
+कुसंगति	कु + संगति	prefix+dict	PENDING	NEUTRAL	[1, 2, 1, 1]	[1, 2, 1, 1]	[1, 2, 1, 1]	Candidate compound split; scansion unaffected
+कुसंस्कार	कु + संस्कार	prefix+dict	PENDING	NEUTRAL	[1, 2, 2, 1]	[1, 2, 2, 1]	[1, 2, 2, 1]	Candidate compound split; scansion unaffected
+कुसमय	कु + समय	prefix+dict	PENDING	NEUTRAL	[1, 1, 1, 1]	[1, 1, 1, 1]	[1, 1, 1, 1]	Candidate compound split; scansion unaffected
+कुहर	कु + हर	prefix+dict	PENDING	NEUTRAL	[1, 1, 1]	[1, 1, 1]	[1, 1, 1]	Candidate compound split; scansion unaffected
+कुहरा	कु + हरा	prefix+dict	PENDING	NEUTRAL	[1, 1, 2]	[1, 1, 2]	[1, 1, 2]	Candidate compound split; scansion unaffected
+कुहराम	कु + हराम	prefix+dict	PENDING	NEUTRAL	[1, 1, 2, 1]	[1, 1, 2, 1]	[1, 1, 2, 1]	Candidate compound split; scansion unaffected
+कुहुक	कु + हुक	prefix+dict	PENDING	NEUTRAL	[1, 1, 1]	[1, 1, 1]	[1, 1, 1]	Candidate compound split; scansion unaffected
+केंद्रीभूत	केंद्री + भूत	dict+dict	PENDING	NEUTRAL	[2, 2, 2, 1]	[2, 2, 2, 1]	[2, 2, 2, 1]	Candidate compound split; scansion unaffected
+कोकशास्त्र	कोक + शास्त्र	dict+dict	PENDING	NEUTRAL	[2, 1, 2, 1]	[2, 1, 2, 1]	[2, 1, 2, 1]	Candidate compound split; scansion unaffected
+कोर्टमार्शल	कोर्ट + मार्शल	dict+dict	APPROVED	FIXES	[2, 2, 1, 1]	[2, 1, 2, 1, 1]	[2, 2, 1, 1]	Compound loanword: कोर्ट + मार्शल (part कोर्ट in extra_lexicon)
+क्रियाविधि	क्रिया + विधि	dict+dict	PENDING	NEUTRAL	[1, 2, 1, 1]	[1, 2, 1, 1]	[1, 2, 1, 1]	Candidate compound split; scansion unaffected
+क्रियाशील	क्रिया + शील	dict+dict	PENDING	NEUTRAL	[1, 2, 2, 1]	[1, 2, 2, 1]	[1, 2, 2, 1]	Candidate compound split; scansion unaffected
+क्षेत्रफल	क्षेत्र + फल	dict+dict	PENDING	NEUTRAL	[2, 1, 1, 1]	[2, 1, 1, 1]	[2, 1, 1, 1]	Candidate compound split; scansion unaffected
