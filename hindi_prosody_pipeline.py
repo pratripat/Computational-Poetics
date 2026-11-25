@@ -30,8 +30,8 @@ import re
 SHORT_MATRAS = {'ि', 'ु', 'ृ', 'ॅ'}
 LONG_MATRAS  = {'ा', 'ी', 'ू', 'े', 'ै', 'ो', 'ौ', 'ॄ', 'ॉ'}
 
-SHORT_INDEP_VOWELS = {'अ', 'इ', 'उ', 'ऋ'}
-LONG_INDEP_VOWELS  = {'आ', 'ई', 'ऊ', 'ए', 'ऐ', 'ओ', 'औ', 'ॠ'}
+SHORT_INDEP_VOWELS = {'अ', 'इ', 'उ', 'ऋ', 'ऍ'}
+LONG_INDEP_VOWELS  = {'आ', 'ई', 'ऊ', 'ए', 'ऐ', 'ओ', 'औ', 'ॠ', 'ऑ'}
 
 ANUSVARA = 'ं'
 CHANDRABINDU = 'ँ'
@@ -80,6 +80,7 @@ def syllabify(word):
     while i < n:
         ch = word[i]
         if ch in INDEP_VOWELS:
+            start = i
             long_ = ch in LONG_INDEP_VOWELS
             i += 1
             nasal = False
@@ -87,7 +88,7 @@ def syllabify(word):
                 nasal = True
                 i += 1
             syllables.append({
-                'text': ch,
+                'text': word[start:i],
                 'long': long_,
                 'nasal': nasal,
                 'lead_conjunct': 0,
