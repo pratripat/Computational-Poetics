@@ -1,0 +1,324 @@
+================================================================================
+COMPUTATIONAL POETICS: FULL PROJECT EVOLUTION, RULES, DATABASE & BENCHMARK REPORT
+================================================================================
+
+This report documents the complete development history of the Computational
+Poetics (Hindi Prosody / Laghu-Guru Scansion, Syllable Grouping, and Poem
+Rhythm Scoring) system from its first algorithmic prototype through ML/BiLSTM
+modeling, database correction, rule refinement (R1-R5), and retraining.
+
+All accuracy figures below are measured from direct evaluations against the
+original database (Pronunciation_Consonants_Amisha.txt, 13,231 entries) and the
+Sir-corrected merged database (Corrected_scansion_output_oneline_Consonants.txt
+for क/क़ + original for the rest, 13,225 entries).
+
+--------------------------------------------------------------------------------
+1. STAGE 1 — INITIAL RULE-BASED PROTOTYPES (v1)
+--------------------------------------------------------------------------------
+Initial files:
+  - prosody_rules.py
+  - hindi_prosody_pipeline.py (v1, commit 60b951e)
+  - hindi_prosody_pipeline_compact.py
+  - evaluate_on_corpus.py
+  - hindi_scansion_algorithm.py
+
+Input Database v1:
+  - Pronunciation_Consonants_Amisha.txt (13,231 words starting with Devanagari
+    consonants क–ह; later filtered to 13,196 key-reconstructable words in
+    corpus.json / data.csv).
+  - Format: {"word_key": {"word": ["chunk1", ...], "scansion": [[...], ...]}}
+
+Initial Stage-1 Rules (Syllabification -> Laghu=1 / Guru=2 Weights):
+  1. Short vowels/matras (अ इ उ ऋ; ि ु ृ ॅ ॉ) -> laghu (1).
+  2. Long vowels/matras (आ ई ऊ ए ऐ ओ औ ॠ; ा ी ू े ै ो ौ ॄ) -> guru (2).
+  3. Nasalization & visarga (ं anusvara, ँ chandrabindu, ः visarga) -> guru (2).
+  4. SaMyoga / Conjunct closure: a short syllable followed by a consonant
+     cluster (lead_conjunct >= 1) is closed and becomes guru (2).
+  5. म्ह / न्ह / ल्ह exception: conjunct ending in ह preceded by म, न, or ल
+     did NOT lengthen the previous syllable (unconstrained cluster length).
+  6. Word-final dangling virama consonant (no own vowel) -> weight 1 without
+     retroactively closing the preceding syllable.
+
+Initial Stage-2 Rules (Bracket / Word-Formation Grouping):
+  Two weight-only heuristics were tested in Stage 1:
+  - Algo v1 (hindi_prosody_pipeline.py v1 / hindi_scansion_algorithm.py):
+    Right-to-left 2-matra pairing of laghus ([1, 1]) while guru ([2]) always
+    stood alone. Result on Old DB:
+      Weight accuracy = 99.91% | Grouping = 57.37% | End-to-End = 57.32%
+  - Algo Compact (hindi_prosody_pipeline_compact.py):
+    Right-to-left greedy pairing where any light (1) joined its left neighbor
+    ([2, 1] or [1, 1]) and heavy (2) stood alone. Result on Old DB:
+      Weight accuracy = 99.91% | Grouping = 86.25% | End-to-End = 86.18%
+
+Observation at Stage 1:
+  Flat syllable weights were nearly solved (~99.9% on the original corpus),
+  but pure weight-based bracket grouping stalled at 57.3% (v1) to 86.2%
+  (compact), leaving a ~14-43% gap.
+
+
+--------------------------------------------------------------------------------
+2. STAGE 2 — MACHINE LEARNING & DEEP LEARNING (BiLSTM) MODELS
+--------------------------------------------------------------------------------
+To bridge the Stage-2 grouping gap, syllable grouping was framed as a sequence
+labeling problem (BIO tagging per syllable: 'B' = begins a new bracket group,
+'I' = merges into the current bracket group).
+
+Dataset preparation (prepare_data_csv.py):
+  - Built data.csv from corpus.json (13,196 aligned words; 40,054 syllables).
+  - Each syllable carried: syllable text, Stage-1 weight (1/2), heaviness class
+    ('intrinsic' long/nasal, 'positional' conjunct-closed, or 'light'),
+    and 0-based position, split 80% Train / 10% Val / 10% Test at word level.
+
+Model A — ML Baseline (syllable_grouping_training.ipynb):
+  - Architecture: Sparse DictVectorizer over ±2 context window (current/prev/next
+    syllable text, weight, heaviness, offsets -2..+2, position, is_first, is_last)
+    fed into balanced Logistic Regression (max_iter=2000).
+  - Saved bundle: trained_model/syllable_grouping_model.joblib
+  - Performance on Old DB Unseen Test Split (N=1,315):
+      Grouping (given weight) = 93.08% | End-to-End Exact = 93.08% (1224/1315)
+    (On notebook's 4,016-syllable test set: 96.56% token acc, 90.39% E2E seq.)
+
+Model B — Deep Learning BiLSTM (syllable_grouping_bilstm.ipynb):
+  - Architecture: Multi-input 2-layer Bidirectional LSTM:
+      * Syllable Akshara Embedding (dim=64)
+      * Weight Embedding (dim=16)
+      * Heaviness Type Embedding (dim=16)
+      * Continuous Normalized Relative Position (dim=1)
+      * Total input = 97 -> 2-layer BiLSTM (hidden=64 per direction -> 128)
+      * Dropout (0.2) + Linear classifier (128 -> 2 logits for B / I)
+  - Saved checkpoint: trained_model/bilstm_grouping_model.pt
+  - Performance on Old DB Unseen Test Split (N=1,315):
+      Grouping (given weight) = 98.86% | End-to-End Exact = 98.86% (1300/1315)
+    (Across Full Old DB N=13,231: 98.23% End-to-End.)
+
+
+--------------------------------------------------------------------------------
+3. STAGE 3 — DATABASE CORRECTION & DISCOVERY OF NEW RULES (R1-R5)
+--------------------------------------------------------------------------------
+Database Correction (Corrected_scansion_output_oneline_Consonants.txt):
+  Sir manually reviewed and corrected the क / क़ section of the corpus while
+  leaving ख–ह untouched for later correction.
+  Key database changes and data hygiene repairs applied:
+  - Respelled keys: 74 old क/क़ keys removed and 65 respelled keys added
+    (e.g. कमश: -> क्रमश:, कागज़->कागज़, कडआ->कड़ुआ). Old keys were excluded
+    from the merged gold so stale spellings did not survive.
+  - 3 broken JSON syntax lines repaired: कद्दावर, कार्यपालिका, कूजन.
+  - Whitespace inside word chunks stripped across 7 entries; float typo
+    करकराहट [1.1] replaced with [1, 1].
+  - Merged Gold Dataset = Sir-corrected क/क़ words (1,056) + original
+    Pronunciation_Consonants_Amisha.txt for ख–ह (12,169) = 13,225 total words.
+    Evaluation ignores `word` chunks (uses only `scansion`).
+  - Later expanded lexicon with Swar words from 'स्वर व्यंजन Word List.docx'
+    (3,564 Swar words -> 16,789 combined Swar+Vyanjan lexicon).
+
+Effect of Database Corrections on Earlier Models:
+  When evaluated on Sir's Corrected क-section (N=1,056) vs Old क-section (1,062):
+  - Old Stage-1 weights dropped from 100.00% -> 98.20% (19 new disagreements).
+  - Old BiLSTM dropped from 97.18% (all Old क) -> 92.05% (all Corrected क),
+    and down to 86.67% on the strictly unseen Corrected क Test Split (N=105)!
+  - Old ML dropped from 92.84% -> 90.53% (all Corrected क) and 87.62% on N=105!
+
+Rules Added, Modified, and Discarded (R1-R5):
+  [MODIFIED] R1 — Candra O (ऑ / ॉ) is Long (2):
+    - Moved ॉ from SHORT_MATRAS to LONG_MATRAS and registered ऑ as long (2)
+      and ऍ as short (1) in INDEP_VOWELS.
+    - Fixed: कॉपी ([2,2]), कॉलर ([2,1,1]), कॉलेज ([2,2,1]) in corr_k.
+    - Note: Changed 15 uncorrected rest words (e.g. डॉलर, ब्लॉक, लॉबी) still
+      annotated under the old short-ॉ convention. (ॅ remains short: open Q.)
+
+  [ADDED] R2 — Normalize ASCII Colon to Visarga:
+    - Replaced ':' with Devanagari visarga 'ः' before syllabification.
+    - Fixed: क्रमश: -> [1, 1, 2] matching gold.
+
+  [MODIFIED] R3 — Single-Consonant + ह Constraint:
+    - Restricted the म्ह / न्ह / ल्ह exemption to lead_conjunct == 1 only.
+    - Doubled clusters before ह now close the preceding syllable properly.
+    - Fixed 5 words in rest: चिन्न्ह, ब्रम्म्ह, ब्रम्म्हा, ब्रम्म्हाण, ब्रम्म्ही.
+
+  [ADDED] R4 — Compound and Prefix Splitting (Weights Reset at Boundary):
+    - Compounds/prefixed words split into constituent morphemes, scanning each
+      part independently and concatenating weights so a conjunct at the start
+      of part 2 does NOT lengthen the end of part 1.
+      Example: कार्यक्रम = कार्य [2, 1] + क्रम [1, 1] -> [2, 1, 1, 1] (instead
+      of whole-word [2, 2, 1, 1]); कुख्यात = कु [1] + ख्यात [2, 1] -> [1, 2, 1].
+    - Dictionary parts require >= 2 syllables (excluding single letters like
+      क, म, स) with leave-one-out lookup; fewest parts, then longest first part.
+    - Controlled via compound_candidates.tsv, APPROVED_SPLITS, and
+      USE_ONLY_APPROVED = True (applies approved dictionary splits + PREFIX_LIST
+      only) so accidental splits like कनस्तर (कन+स्तर) do NOT trigger.
+    - Note: Lowered agreement on the uncorrected 12k rest (44 prefix words
+      dropped) only because ख–ह rows still await Sir's boundary corrections.
+
+  [DISCARDED] Old Stage-2 Grouping Heuristics:
+    - Discarded Algo v1 ([1, 1] RTL, ~57%) and Algo compact (blind light<-left,
+      ~86%) because Sir's 68 bracket edits confirmed his convention was neither.
+
+  [ADDED] R5 — Bare-'a' Right-to-Left Grouping Rule:
+    - Scan right-to-left: a heavy (2) stands alone; a light (1) joins its left
+      neighbor ONLY if it is an unmarked bare consonantal 'a' (no matra sign
+      and not an independent vowel). Lights with vowel marks (ि, ु, ृ, ॅ) or
+      independent vowels stand alone.
+    - Example: कविता -> [1], [1], [2] (वि has ि so stands alone);
+      किताब -> [1], [2, 1] (ब is bare-a so joins ता, कि stands alone).
+    - Raised rule-based grouping on Corrected क-section from 86.31% -> 95.22%!
+
+
+--------------------------------------------------------------------------------
+4. STAGE 4 — POEM RHYTHM SCORING & REVISED UNPAIRED-ODD RULE
+--------------------------------------------------------------------------------
+Poem Scoring Algorithm (rhythm_score.py / rhythm_scorer_full_rules.ipynb /
+presentation/poem_scorer.py):
+  - Splits pasted poems at Devanagari full stops (।, ॥), periods, or newlines;
+    assigns flat laghu/guru weights via Rules R1-R4; runs Dynamic Programming
+    over the syllable stream:
+      * Legal feet sums: 2, 3, 4, 6. Even (2, 4, 6) stand alone.
+      * Odd (3) must pair immediately with a following odd (3), allowing
+        cross-word borrowing if cutting does not leave a lone laghu (1).
+      * Trailing unpaired odd at the end of a line is exempt.
+      * Irregular words (sum not in {2,3,4,6}) are split by DP minimizing
+        violations first, then borrows.
+  - [MODIFIED] Unpaired-Odd Failure Rule:
+      * OLD (Discarded): discarded the failed odd group AND all lookahead words
+        up to the end of the overshooting word.
+      * NEW (Active): discard ONLY the failed odd group (its word, or leftover
+        slice if mid-word), record 1 violation, and restart at the very next word.
+      * Example ("चलो हम और कहीं चले"): OLD discarded चलो+हम+और then paired
+        कहीं|चले (0.80); NEW discards only चलो, keeps हम (EVEN), pairs और|कहीं,
+        leaves चले (END) -> 1 violation, score 0.800.
+  - Line Score = clamp(1 - violations / words, 0, 1); Poem Score = mean.
+
+
+--------------------------------------------------------------------------------
+5. STAGE 5 — RETRAINING ML & BiLSTM ON THE CORRECTED DATABASE
+--------------------------------------------------------------------------------
+Using the Corrected Merged DB (13,225 entries -> 13,221 syllable-aligned words)
+and Stage-1 R1-R4 weights/heaviness:
+  - Sequence split (SEED=42): Train = 10,576 | Val = 1,322 | Test = 1,323
+    (of which Test Corrected क-section = 105 unseen words).
+  - Sir-corrected क/क़ rows in Train were weighted 5x (sample_weight=5.0 for
+    Logistic Regression; 5x oversampling in Train only for BiLSTM) so the clean
+    क-section convention is learned without drowning in uncorrected noise.
+  - New BiLSTM trained 12 epochs (AdamW lr=0.003), peaking at Val E2E = 97.05%
+    at Epoch 9. Saved to trained_model/bilstm_grouping_model.pt and
+    trained_model/syllable_grouping_model.joblib, and wired into
+    presentation/ml_scansion.py and presentation/dl_scansion.py.
+
+
+--------------------------------------------------------------------------------
+6. COMPLETE ACCURACY & BENCHMARK COMPARISON TABLES
+--------------------------------------------------------------------------------
+Metrics:
+  - Wt     : Exact flat weight sequence match (Stage 1)
+  - Grp|Wt : Exact bracket grouping match among weight-matched words (Stage 2)
+  - E2E    : End-to-End exact match (raw word -> weights + brackets)
+
+Table A — Unseen Held-Out Test Splits (SEED=42, Zero Training Leakage)
+--------------------------------------------------------------------------------
+Model / Approach                        | Old Test (N=1315) | New Test (N=1323) | New Corrected k-Test (N=105)
+----------------------------------------+-------------------+-------------------+-----------------------------
+Algo v1 (old wt + [1,1] RTL)            | 56.20% E2E        | 56.01% E2E        | 52.38% E2E (Wt 95.24%)
+Algo Compact (old wt + light<-left)     | 87.45% E2E        | 86.92% E2E        | 80.00% E2E (Wt 95.24%)
+Algo R1-R5 (Full New Rules, zero ML)    | 93.08% E2E        | 93.12% E2E        | 93.33% E2E (Wt 99.05%, Grp 94.23%)
+Old ML (LogReg, Old Stage-1 & Old DB)   | 93.08% E2E        | 92.52% E2E        | 87.62% E2E (Grp|Wt 92.00%)
+Old DL (BiLSTM, Old Stage-1 & Old DB)   | 98.86% E2E        | 97.96% E2E        | 86.67% E2E (Grp|Wt 91.00%)
+New ML (LogReg, R1-R4 + Corrected DB)   | 91.48% E2E        | 91.69% E2E        | 94.29% E2E (Grp|Wt 95.19%)
+New DL (BiLSTM, R1-R4 + Corrected DB)   | 96.35% E2E        | 96.67% E2E        | 93.33% E2E (Grp|Wt 94.23%)
+--------------------------------------------------------------------------------
+
+Table B — Full Dataset & Full Corrected k-Section Evaluations
+--------------------------------------------------------------------------------
+Model / Approach                        | Full Old DB (13231) | Full New DB (13225) | All Corrected k-section (1056)
+----------------------------------------+---------------------+---------------------+-------------------------------
+Algo v1 (old wt + [1,1] RTL)            | 57.32% E2E          | 57.16% E2E          | 55.87% E2E (Wt 98.20%)
+Algo Compact (old wt + light<-left)     | 86.18% E2E          | 86.09% E2E          | 84.75% E2E (Wt 98.20%)
+Algo R1-R5 (Full New Rules, zero ML)    | 92.88% E2E          | 92.99% E2E          | 94.22% E2E (Wt 98.96%, Grp 95.22%)
+Old ML (LogReg, Old Stage-1 & Old DB)   | 92.45% E2E          | 92.26% E2E          | 90.53% E2E (Grp|Wt 92.19%)
+Old DL (BiLSTM, Old Stage-1 & Old DB)   | 98.23% E2E          | 97.82% E2E          | 92.05% E2E (Grp|Wt 93.73%)
+New ML (LogReg, R1-R4 + Corrected DB)   | 92.14% E2E          | 92.43% E2E          | 94.79% E2E (Grp|Wt 95.79%)
+New DL (BiLSTM, R1-R4 + Corrected DB)   | 97.79% E2E          | 98.25% E2E          | 97.63% E2E (Grp|Wt 98.66%)
+--------------------------------------------------------------------------------
+
+Note on clean-reconstruct evaluation (hindi_prosody_pipeline.py):
+  On clean key-reconstructable words only:
+  - Clean k-section (N=958): Wt = 99.69%, Grp|Wt = 95.29%, E2E = 94.99%.
+  - Uncorrected rest (N=12,139, R4 off): Wt = 99.94%, Grp|Wt = 93.70%, E2E = 93.65%.
+
+How Every Change Moved the Metrics:
+  1. Stage 1 -> R5: Finding the bare-a constraint pushed rule-based grouping
+     from 57.3% (v1) -> 86.3% (compact) -> 95.2% on clean data — proving that
+     character-level vowel-mark information (bare-a vs explicit matra) carried
+     the missing signal that weights alone could never reach (weights-only cap
+     is ~88.9%).
+  2. Data Correction exposed Old ML/BiLSTM overfitting: On the unseen corrected
+     k-words (N=105), Old BiLSTM collapsed from 98.86% -> 86.67% because its
+     old Stage-1 rules missed R1-R4 and its weights memorized the uncorrected
+     database. Algo R1-R5 jumped straight past it to 93.33% (94.22% overall k).
+  3. Retraining + R1-R4 Stage-1 restored ML/BiLSTM: Updating Stage-1 to R1-R4
+     and retraining on the corrected DB lifted unseen k-test E2E from 87.62% ->
+     94.29% (New ML) and 86.67% -> 93.33% (New BiLSTM), while preserving
+     96.67% E2E across the full unseen test split.
+
+
+--------------------------------------------------------------------------------
+7. REMAINING OPEN QUESTIONS & RESIDUALS (CORRECTED k-SECTION)
+--------------------------------------------------------------------------------
+11 words in the 1,056 corrected क-section still disagree on weights under R1-R4
+(USE_ONLY_APPROVED = True):
+  - 6 missing compound/prefix constituent parts in merged gold:
+    कार्यक्षम (missing क्षम), कतरब्योंत (missing कतर), कुप्रबन्ध (missing प्रबन्ध),
+    कुप्रशासन (missing प्रशासन), कोर्टमार्शल (missing कोर्ट), कालानुक्रमण (अनुक्रमण).
+  - 2 candrabindu (ँ) short-vowel cases: कँटिया, कँटीला (light vs 7 heavy ँ).
+  - 1 suspicious heavy initial क: कटवाँ ([2, 1, 2] with no matra/nasal/conjunct).
+  - 1 key spelling typo: कर्मेद्रिय (key misses न् vs chunks for कर्मेन्द्रिय).
+  - 1 prefix conflict: कुव्यवहार (prefix कु + व्यवहार gives [1,1,1,2,1], whereas
+    Sir's file kept [2,1,1,2,1], opposite to कुप्रबन्ध).
+  - Open vowel check: ॅ / ऍ remains short (1) pending evidence from Sir.
+
+Residual ~4.8% grouping gap on R5 (bare-a):
+  Mainly 3 lexical/rhythmic patterns: [2, 1, 2] words where Sir keeps middle
+  laghu separate, reduplicated words (करकरा, कटकटाना), and unsplit prefix words.
+
+
+--------------------------------------------------------------------------------
+8. CONCLUSION — WHICH APPROACH TO USE & TRADE-OFFS
+--------------------------------------------------------------------------------
+1. Rule-Based Pipeline (Rules R1-R5) — RECOMMENDED FOR LINGUISTIC & VERSE SCORING:
+   Advantages:
+   - Fully deterministic, transparent, and linguistically explainable (every
+     weight and bracket maps to an explicit Chandas/orthographic rule).
+   - Zero overfitting to noisy or uncorrected rows (actually beat Old BiLSTM on
+     unseen corrected क-words: 93.33% vs 86.67%, and ties New BiLSTM at 93.33%
+     without needing any GPU/weights/training data).
+   - Generalizes immediately to unseen Swar words (अ–औ, 3,564 words) and new
+     compounds/poems where no training corpus exists.
+   Disadvantages:
+   - Cannot memorize lexical exceptions like reduplicated stems or unmodeled
+     compounds unless added to APPROVED_SPLITS / extra_lexicon.json.
+   - Caps around ~95% on bracket grouping without lexical/prosodic overrides.
+
+2. Deep Learning BiLSTM (trained_model/bilstm_grouping_model.pt):
+   Advantages:
+   - Highest overall accuracy on mixed corpora (96.67% unseen full test, 98.25%
+     full merged DB) because bidirectional recurrent context captures word-wide
+     patterns and irregular/lexical grouping habits (e.g. 5-syllable शहसवार).
+   Disadvantages:
+   - Black-box behavior; memorizes annotator noise when trained on uncorrected
+     letters (ख–ह); needs retraining whenever rules or corpus annotations change;
+     still depends on R1-R4 Stage-1 for accurate weights on unseen words.
+
+3. Machine Learning Baseline (Logistic Regression, trained_model/syllable_grouping_model.joblib):
+   Advantages:
+   - Very fast CPU training/inference, interpretable feature weights, strong on
+     short local patterns (94.29% on unseen k-test, 92.44% grouping on full test).
+   Disadvantages:
+   - Fixed ±2 local context window misses long-word dependencies (e.g. misses
+     शहसवार = [[1],[1,1],[2,1]], predicting [[1,1,1],[2,1]] instead).
+
+Overall Recommendation:
+  Use the **Rule-Based R1-R5 pipeline** as the primary engine for Hindi prosody
+  and poem rhythm scoring (since rhythm scoring only needs clean R1-R4 syllable
+  weights plus transparent boundary handling, and rules never overfit stale
+  corpus noise). Pair it with the **retrained BiLSTM** for Stage-2 dictionary
+  bracket suggestion/validation as Sir continues correcting letters ख–ह,
+  retraining the BiLSTM after each corrected batch is finalized.
+================================================================================
