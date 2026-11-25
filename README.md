@@ -1,6 +1,6 @@
 # Computational Poetics: Hindi Metrical Scansion & Syllable Grouping
 
-Computational analysis and automatic metrical scansion (Laghu-Guru weight assignment and word-formation / 2-mātrā grouping) for Hindi text using classical Chandas prosody rules and Machine Learning / Deep Learning sequence models.
+Computational analysis and automatic metrical scansion (Laghu–Guru weight assignment and bracket grouping) for Hindi text using updated classical *Chandas* prosody rules (**R1–R5**), compound/prefix boundary resolution, and Machine Learning / Deep Learning sequence models.
 
 ---
 
@@ -8,97 +8,141 @@ Computational analysis and automatic metrical scansion (Laghu-Guru weight assign
 
 The scansion pipeline operates in two core stages:
 1. **Stage 1 — Syllabification & Weight Assignment (Laghu / Guru):**
-   - Segments Devanagari words into aksharas (syllables).
-   - Applies classical Sanskrit/Hindi prosodic rules (short/long matras, anusvara, chandrabindu, visarga, and saṁyoga conjunct cluster closure rules) to assign **Laghu (1)** or **Guru (2)**.
-   - The rule-based algorithm achieves **~99.9%** exact weight match against the 13,000+ word corpus.
-2. **Stage 2 — Word-Formation & Bracket Grouping (2-Mātrā Units):**
-   - Groups syllables into bracketed metrical units (e.g. `[[1, 1], [2], [1, 1]]`).
-   - Purely deterministic rules struggle with edge cases (~57% accuracy), while Machine Learning and Deep BiLSTM sequence models resolve contextual grouping boundaries with high precision (~97% accuracy).
+   - Segments Devanagari words into aksharas (syllables), including independent *candra* vowels (`ऑ`, `ऍ`) and trailing nasal/visarga marks.
+   - Applies classical Sanskrit/Hindi prosodic rules (short/long *mātrās*, *anusvāra*, *candrabindu*, *visarga*, *saṁyoga* conjunct cluster closure, and the single-consonant `+ ह` exemption) to assign **Laghu (`1`)** or **Guru (`2`)**.
+   - Handles morpheme-level **compound and prefix boundaries (R4)** so conjuncts at the start of a second constituent do not artificially lengthen syllables across the boundary.
+   - Achieves **99.69%** weight accuracy on Sir's corrected `क`-section and **99.94%** on the uncorrected consonants corpus.
+2. **Stage 2 — Bracket Grouping:**
+   - Groups syllables into bracketed prosodic units (e.g., `[[2, 1], [1, 1]]`).
+   - With the updated **bare-`a` grouping rule (R5)** and compound splitting (**R4**), deterministic rule-based grouping reaches **95.29%** grouping accuracy (**94.99%** end-to-end exact match) on the clean corrected `क`-section and **93.70%** (**93.65%** end-to-end) on the uncorrected corpus.
+   - Machine Learning and Deep BiLSTM sequence models trained on the earlier corpus (`corpus.json` / `data.csv`) also explore data-driven sequence labeling.
 
 ---
 
-## Which File to Run?
+## Updated Prosody Rules (`hindi_prosody_pipeline.py`)
 
-### 1. Algorithmic / Rule-Based Pipeline
+`hindi_prosody_pipeline.py` implements rules **R1–R5** with data hygiene and leave-one-out dictionary evaluation:
 
-If you want to run the deterministic, rule-based prosody engine and view algorithmic scansion results:
+- **R1 — Long *Candra* Vowels:** `ॉ` is classified under `LONG_MATRAS`, with independent vowels `ऑ` (long) and `ऍ` (short).
+- **R2 — Visarga Colon Normalization:** ASCII `:` is normalized to Devanagari visarga `ः` before syllabification.
+- **R3 — Single-Consonant + `ह` Exemption:** The `म्ह`/`न्ह`/`ल्ह` non-bumping exception applies only when `lead_conjunct == 1` (doubled consonants before `ह` close the preceding syllable).
+- **R4 — Compound & Prefix Splitting:** Splits words via `approved_splits`, `PREFIX_LIST`, or leave-one-out dictionary + `extra_lexicon.json` lookup (excluding `COMPOUND_BLACKLIST`), scanning constituents independently so weights reset at morpheme boundaries.
+- **R5 — Bare-`a` Bracket Grouping:** Right-to-left pass where heavy (`2`) syllables, independent vowels, and vowel-marked lights stand alone, while an unmarked light (*bare-a*) joins its left neighbor.
 
-* **Evaluate full scansion & grouping on corpus:**
-  ```bash
-  python3 hindi_scansion_algorithm.py corpus.json
-  ```
-  Evaluates both Laghu/Guru weight assignment and rule-based right-to-left 2-mātrā grouping on the full corpus, printing accuracy stats and sample failure cases.
+### Rule-Based Evaluation (R1–R5, Leave-One-Out)
 
-* **Quick weight-only benchmark:**
-  ```bash
-  python3 evaluate_on_corpus.py corpus.json
-  ```
-  Runs `prosody_rules.py` against `corpus.json` and reports flat weight sequence accuracy and detailed mismatch diagnostics.
+Run with `python hindi_prosody_pipeline.py`:
 
-* **Alternative pipeline runner:**
-  ```bash
-  python3 hindi_prosody_pipeline.py corpus.json
-  ```
-  Runs the end-to-end rule-based pipeline and prints side-by-side comparisons of gold vs. predicted brackets.
+| Subset | Words (*N*) | Weight Accuracy | Grouping Accuracy *(weights matched)* | End-to-End Exact Match |
+| :--- | :---: | :---: | :---: | :---: |
+| **Clean `क`-section** (`sir_corrected`) | 958 | 955 / 958 (**99.69%**) | 910 / 955 (**95.29%**) | 910 / 958 (**94.99%**) |
+| **Uncorrected rest** | 12,139 | 12,132 / 12,139 (**99.94%**) | 11,368 / 12,132 (**93.70%**) | 11,368 / 12,139 (**93.65%**) |
 
 ---
 
-### 2. Machine Learning & Deep Learning Pipelines
+## Generating Swar, Vyanjan & Compound Outputs
 
-If you want to train, evaluate, or interact with the ML models:
+All generated scansion files use the project's one-line JSON dictionary format, guaranteeing `len(word chunks) == len(scansion brackets)` and `"".join(word chunks) == key`:
+
+```json
+{
+  "कार्यक्रम": {"word": ["कार्य", "क्रम"], "scansion": [[2, 1], [1, 1]]},
+  "कुख्यात": {"word": ["कु", "ख्यात"], "scansion": [[1], [2, 1]]}
+}
+```
+
+### 1. Swar & Unified Lexicon Generator
+```bash
+python generate_swar_outputs.py
+```
+Extracts, cleans, and scans words from `स्वर व्यंजन Word List.docx` into:
+- `scansion_output_swar.txt` — **3,564** Swar entries sorted in Hindi dictionary (*Varṇamālā*) collation order.
+- `scansion_output_swar_doc_order.txt` — **3,564** Swar entries preserved in original `.docx` order.
+- `scansion_output_full_swar_vyanjan.txt` — **16,789** combined entries (**3,564** Swar + **13,225** Vyanjan from `Corrected_scansion_output_oneline_Consonants.txt`).
+
+### 2. Compound & Prefix Generator (Swar + Vyanjan)
+```bash
+python generate_compound_outputs.py
+```
+Identifies compound and prefixed words across `scansion_output_full_swar_vyanjan.txt`, evaluates constituent boundaries independently, and writes:
+- `scansion_output_compounds_required.txt` — **339** entries (**149** Swar, **190** Vyanjan) that strictly require compound generation (weight bump avoided, boundary chunk merge prevented, hyphenated, or approved `क` splits).
+- `scansion_output_compounds_swar_vyanjan.txt` — **1,636** identified compound and prefixed entries scanned with constituent boundaries.
+- `compound_candidates_swar_vyanjan.tsv` — Tab-separated comparison table (parts, split type, impact, whole vs. split weights/scansion, chunks, and notes).
+
+### 3. Algorithmic & Evaluation Utilities
+- `python hindi_prosody_pipeline.py` — Runs the R1–R5 pipeline on `Pronunciation_Consonants_Amisha.txt` and `Corrected_scansion_output_oneline_Consonants.txt`.
+- `python generate_compound_candidates.py` — Generates `compound_candidates.tsv` for the `क`/`क़` section.
+- `python compare_corrections.py` — Compares original vs. Sir-corrected consonant annotations.
+- `python hindi_scansion_algorithm.py corpus.json` / `python evaluate_on_corpus.py corpus.json` — Earlier rule-based corpus evaluators.
+
+---
+
+## Machine Learning & Deep Learning Pipelines
+
+If you want to train, evaluate, or interact with the ML models trained on `corpus.json` / `data.csv`:
 
 * **Interactive Word Tester (Notebook):**
   * Open and run [`hindi_scansion_interactive.ipynb`](hindi_scansion_interactive.ipynb).
-  * Loads the trained model (`trained_model/syllable_grouping_model.joblib`) and provides an interactive prompt where you can type any Hindi word to inspect its syllables, weights, heaviness type, and predicted bracket groupings.
+  * Loads [`trained_model/syllable_grouping_model.joblib`](trained_model/syllable_grouping_model.joblib) and provides an interactive prompt to inspect syllables, weights, heaviness type, and predicted bracket groupings.
 
 * **Deep Bidirectional LSTM (BiLSTM) Model (Notebook):**
   * Open and run [`syllable_grouping_bilstm.ipynb`](syllable_grouping_bilstm.ipynb).
-  * Uses PyTorch to train a 2-layer BiLSTM with multi-input embeddings (syllable grapheme, prosodic weight, intrinsic vs. positional heaviness, relative position).
-  * Evaluates against held-out test words and saves weights to `trained_model/bilstm_grouping_model.pt`. Includes an interactive tester cell at the bottom.
+  * Trains a 2-layer PyTorch BiLSTM with multi-input embeddings and saves weights to [`trained_model/bilstm_grouping_model.pt`](trained_model/bilstm_grouping_model.pt).
 
 * **Baseline ML Sequence Model (Notebook):**
   * Open and run [`syllable_grouping_training.ipynb`](syllable_grouping_training.ipynb).
-  * Trains a feature-based sequence labeler (context-window N-grams + Logistic Regression) on `data.csv`.
+  * Trains a feature-based sequence labeler (context-window N-grams + Logistic Regression) on [`data.csv`](data.csv).
 
 * **Regenerate Dataset for ML:**
   ```bash
-  python3 prepare_data_csv.py
+  python prepare_data_csv.py
   ```
-  Extracts features and BIO labels from `corpus.json` to generate [`data.csv`](data.csv).
 
----
-
-## Model Performance Comparison
+### Earlier Benchmark Comparison (on `corpus.json` prior to R4/R5)
 
 | Approach | Model / Method | Exact Word-Sequence Match |
 | :--- | :--- | :--- |
-| **Algorithmic** | Rule-Based Right-to-Left Pairing | ~57.3% |
+| **Algorithmic (Legacy)** | Earlier Right-to-Left Pairing | ~57.3% |
 | **Machine Learning** | Context-Window Logistic Regression | ~90.4% |
-| **Deep Learning** | Multi-Input Deep BiLSTM (`.pt`) | **~96.9%** |
+| **Deep Learning** | Multi-Input Deep BiLSTM (`.pt`) | ~96.9% |
 
 ---
 
 ## Repository Structure
 
 ```text
-├── corpus.json                         # 13,000+ annotated Hindi word scansion dataset
-├── data.csv                            # Syllable-level feature dataset with BIO labels
-├── deformed.txt                        # Log of corrupted/malformed words in raw corpus
-├── Pronunciation_Consonants_Amisha.txt # Pronunciation dictionary reference
-├── Text to Matra Rules.pdf             # Reference documentation on matra & prosody rules
+├── Pronunciation_Consonants_Amisha.txt              # Original consonants scansion corpus
+├── Corrected_scansion_output_oneline_Consonants.txt # Consonants corpus with corrected क/क़ section
+├── स्वर व्यंजन Word List.docx                       # Swar (अ–औ) source word list
+├── extra_lexicon.json                               # Auxiliary morpheme entries for R4 splits
+├── Text to Matra Rules.pdf                          # Reference prosody rule documentation
+├── corpus.json                                      # 13,000+ annotated word dataset (ML pipeline)
+├── data.csv                                         # Syllable-level feature dataset with BIO labels
+├── deformed.txt                                     # Log of corrupted/malformed words in raw corpus
 │
-├── hindi_scansion_algorithm.py         # Full rule-based scansion & grouping algorithm
-├── prosody_rules.py                    # Core rule definitions for syllabification & weights
-├── evaluate_on_corpus.py               # Benchmark script for evaluating prosody rules
-├── prepare_data_csv.py                 # Preprocessing script to create data.csv
-├── hindi_prosody_pipeline.py           # Pipeline script with detailed diagnostics
-├── hindi_prosody_pipeline_compact.py   # Compact standalone version of the prosody pipeline
+├── hindi_prosody_pipeline.py                        # Main R1–R5 rule pipeline & evaluation
+├── hindi_prosody_pipeline_compact.py                # Compact standalone prosody pipeline
+├── generate_swar_outputs.py                         # Swar & unified Swar+Vyanjan output generator
+├── generate_compound_outputs.py                     # Swar+Vyanjan compound/prefix output generator
+├── generate_compound_candidates.py                  # क-section compound candidates TSV generator
+├── compare_corrections.py                           # Diff/analysis of original vs. corrected data
+├── hindi_scansion_algorithm.py                      # Earlier rule-based scansion & grouping script
+├── prosody_rules.py                                 # Earlier rule definitions
+├── evaluate_on_corpus.py                            # Corpus weight evaluator
+├── prepare_data_csv.py                              # Feature/BIO extractor for data.csv
 │
-├── hindi_scansion_interactive.ipynb    # Interactive CLI/Notebook for testing words with ML
-├── syllable_grouping_training.ipynb    # Training notebook for baseline ML sequence model
-├── syllable_grouping_bilstm.ipynb      # Training & evaluation notebook for Deep BiLSTM
+├── scansion_output_swar.txt                         # 3,564 Swar words (dictionary order)
+├── scansion_output_swar_doc_order.txt               # 3,564 Swar words (document order)
+├── scansion_output_full_swar_vyanjan.txt            # 16,789 unified Swar + Vyanjan words
+├── scansion_output_compounds_required.txt           # 339 words requiring compound generation
+├── scansion_output_compounds_swar_vyanjan.txt       # 1,636 compound/prefixed words
+├── compound_candidates.tsv                          # क-section compound candidate review sheet
+├── compound_candidates_swar_vyanjan.tsv             # Full Swar+Vyanjan compound review sheet
 │
+├── hindi_scansion_interactive.ipynb                 # Interactive ML word tester notebook
+├── syllable_grouping_training.ipynb                 # Baseline ML training notebook
+├── syllable_grouping_bilstm.ipynb                   # Deep BiLSTM training & evaluation notebook
 └── trained_model/
-    ├── bilstm_grouping_model.pt        # Pretrained Deep BiLSTM PyTorch weights
-    └── syllable_grouping_model.joblib  # Pretrained baseline ML model
+    ├── bilstm_grouping_model.pt                     # Pretrained Deep BiLSTM PyTorch weights
+    └── syllable_grouping_model.joblib               # Pretrained baseline ML model
 ```
